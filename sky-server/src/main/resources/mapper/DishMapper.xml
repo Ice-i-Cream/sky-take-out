@@ -35,13 +35,13 @@
         select d.*,c.name as categoryName
         from dish d left join category c on d.category_id = c.id
         <where>
-            <if test="name!=null">
+            <if test="name != null">
                 and d.name like concat('%',#{name},'%')
             </if>
-            <if test="categoryId!=null">
-                and d.categoryId like concat('%',#{categoryId},'%')
+            <if test="categoryId != null">
+                and d.category_id like concat('%',#{categoryId},'%')
             </if>
-            <if test="status!=null">
+            <if test="status != null">
                 and d.status like concat('%',#{status},'%')
             </if>
         </where>

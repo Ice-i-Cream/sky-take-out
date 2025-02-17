@@ -40,7 +40,8 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
         log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
                 .addPathPatterns("/admin/**")
-                .excludePathPatterns("/admin/employee/login");
+                .excludePathPatterns("/admin/employee/login", "/admin/common/send");
+
     }
 
     /**
@@ -71,8 +72,12 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      */
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始设置静态资源映射...");
+
         registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        //设置访问 addResourceHandler中的虚拟路径 被映射到 addResourceLocations真实路径中
+        String dir = System.getProperty("user.dir");
+        registry.addResourceHandler("/image/**").addResourceLocations("file:" + dir + "/files/");
     }
 
     /**
