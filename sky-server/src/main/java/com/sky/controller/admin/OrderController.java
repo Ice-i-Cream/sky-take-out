@@ -52,18 +52,20 @@ public class OrderController {
 
     /**
      * 查询订单详情
+     *
      * @param id
      * @return
      */
     @GetMapping("/details/{id}")
     @ApiOperation("查询订单详情")
-    public Result<OrderVO> details(Long id) {
+    public Result<OrderVO> details(@PathVariable("id") Long id) {
         OrderVO details = orderService.details(id);
         return Result.success(details);
     }
 
     /**
      * 接单
+     *
      * @param ordersCancelDTO
      * @return
      */
@@ -76,6 +78,7 @@ public class OrderController {
 
     /**
      * 拒单
+     *
      * @param ordersRejectionDTO
      * @return
      */
@@ -89,6 +92,7 @@ public class OrderController {
 
     /**
      * 取消订单
+     *
      * @param ordersCancelDTO
      * @return
      */
@@ -113,6 +117,7 @@ public class OrderController {
 
     /**
      * 完成订单
+     *
      * @param id
      * @return
      */
