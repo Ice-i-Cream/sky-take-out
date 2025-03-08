@@ -56,12 +56,25 @@
         select *
         from orders
         <where>
-            <if test="number!=null and number!=''">and number like concat('%',#{number},'%')</if>
-            <if test="phone!=null and phone!=''">and phone like concat('%',#{phone},'%')</if>
-            <if test="userId!=null and userId!=''">and user_id=#{userId}</if>
-            <if test="status!=null and status!=''">and status=#{status}</if>
-            <if test="beginTime!=null and beginTime!=''">and order_time&gt;=#{beginTime}</if>
-            <if test="endTime!=null and endTime!=''">and order_time&lt;=#{endTime}</if>
+            <if test="number != null and number != '' ">
+                and number like concat('%',#{number},'%')
+            </if>
+
+            <if test="phone != null and phone!='' ">
+                and phone like concat('%',#{phone},'%')
+            </if>
+            <if test="userId != null and userId != '' ">
+                and user_id = #{userId}
+            </if>
+            <if test="status != null and status != '' ">
+                and status = #{status}
+            </if>
+            <if test="beginTime != null">
+                and order_time &gt;= #{beginTime}
+            </if>
+            <if test="endTime!=null">
+                and order_time &lt;= #{endTime}
+            </if>
         </where>
         order by order_time desc
     </select>
@@ -69,4 +82,62 @@
         select count(*)
         from orders where status=#{status};
     </select>
+
+    <select id="sumByMap" resultType="java.lang.Double">
+        <!-- 生成连续日期序列 -->
+        WITH RECURSIVE date_sequence AS (
+        SELECT COALESCE(#{begin}, CURDATE() - INTERVAL 30 DAY) AS date UNION ALL
+        SELECT date + INTERVAL 1 DAY FROM date_sequence WHERE date &lt; COALESCE(#{end}, CURDATE())
+        )
+        SELECT IFNULL(SUM(o.amount), 0) FROM date_sequence ds
+        -- 左连接原查询结果
+        LEFT JOIN (
+        SELECT DATE(order_time) AS order_date, amount FROM orders
+        <where>
+            <if test="begin!= null">
+                AND order_time &gt; #{begin}
+            </if>
+            <if test="end!= null">
+                AND order_time &lt; #{end}
+            </if>
+            <if test="status!= null">
+                AND status = #{status}
+            </if>
+        </where>
+        ) o ON ds.date = o.order_date
+        GROUP BY ds.date
+        ORDER BY ds.date
+    </select>
+
+
+    <!--    根据动态条件统计订单数量-->
+    <select id="countByMap" resultType="java.lang.Integer">
+        select count(id) from orders
+        <where>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="begin != null">
+                and order_time &gt;= #{begin}
+            </if>
+            <if test="end != null">
+                and order_time &lt;= #{end}
+            </if>
+        </where>
+    </select>
+    <select id="getSalesTop" resultType="com.sky.dto.GoodsSalesDTO">
+        select od.name ,sum(od.number) number
+        from order_detail od ,orders o
+        where od.order_id=o.id and o.status=5
+        <if test="begin != null">
+            and o.order_time &gt; #{begin}
+        </if>
+        <if test="end != null">
+            and o.order_time &lt; #{end}
+        </if>
+        group by od.name
+        order by number desc
+        limit 0,10
+    </select>
+
 </mapper>
