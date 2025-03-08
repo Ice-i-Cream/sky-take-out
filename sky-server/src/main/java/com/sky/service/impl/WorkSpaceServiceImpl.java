@@ -55,7 +55,8 @@ public class WorkSpaceServiceImpl implements WorkSpaceService {
         businessDataVO.setOrderCompletionRate(totalOrderCount == 0 ? 0 : validOrderCount.doubleValue() / totalOrderCount);
 
 //        营业额
-        Double totalNumber = orderMapper.sumByMap(map).get(0);
+        Double totalNumber = orderMapper.sumAllByMap(map);
+        totalNumber = totalNumber == null ? 0 : totalNumber;
         businessDataVO.setTurnover(totalNumber);
 
         businessDataVO.setUnitPrice(validOrderCount == 0 ? 0 : totalNumber / validOrderCount);

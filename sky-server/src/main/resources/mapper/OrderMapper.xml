@@ -139,5 +139,19 @@
         order by number desc
         limit 0,10
     </select>
+    <select id="sumAllByMap" resultType="java.lang.Double">
+        SELECT sum(amount) FROM orders
+        <where>
+            <if test="begin!= null">
+                AND order_time &gt; #{begin}
+            </if>
+            <if test="end!= null">
+                AND order_time &lt; #{end}
+            </if>
+            <if test="status!= null">
+                AND status = #{status}
+            </if>
+        </where>
+    </select>
 
 </mapper>
